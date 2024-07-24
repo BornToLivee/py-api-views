@@ -38,8 +38,7 @@ urlpatterns = [
     path(
         "cinema_halls/",
         views.CinemaHallViewSet.as_view(
-            actions=
-            {
+            actions={
                 "get": "list",
                 "post": "create"
             }
