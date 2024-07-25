@@ -1,72 +1,40 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
-from cinema import views
+from cinema.views import (
+    GenreList,
+    GenreDetail,
+    ActorDetail,
+    ActorList,
+)
+from cinema.views import CinemaHallViewSet, MovieViewSet
 
-movie_list = views.MovieViewSet.as_view(actions={
-    "get": "list",
-    "post": "create"
-})
+cinema_list = CinemaHallViewSet.as_view(
+    actions={
+        "get": "list",
+        "post": "create"
+    }
+)
+cinema_detail = CinemaHallViewSet.as_view(
+    actions={
+        "get": "retrieve",
+        "put": "update",
+        "patch": "partial_update",
+        "delete": "destroy",
+    }
+)
 
-movie_detail = views.MovieViewSet.as_view(actions={
-    "get": "retrieve",
-    "put": "update",
-    "patch": "partial_update",
-    "delete": "destroy"
-})
+router = routers.DefaultRouter()
+router.register(r"movies", MovieViewSet)
 
 urlpatterns = [
-    path(
-        "genres/",
-        views.GenreList.as_view(),
-        name="genre-list"
-    ),
-    path(
-        "genres/<int:pk>/",
-        views.GenreDetail.as_view(),
-        name="genre-detail"
-    ),
-    path(
-        "actors/",
-        views.ActorList.as_view(),
-        name="actor-list"
-    ),
-    path(
-        "actors/<int:pk>/",
-        views.ActorDetail.as_view(),
-        name="actor-detail"
-    ),
-    path(
-        "cinema_halls/",
-        views.CinemaHallViewSet.as_view(
-            actions={
-                "get": "list",
-                "post": "create"
-            }
-        ),
-        name="cinema-hall-list"
-    ),
-    path(
-        "cinema_halls/<int:pk>/",
-        views.CinemaHallViewSet.as_view(
-            actions={
-                "get": "retrieve",
-                "put": "update",
-                "patch": "partial_update",
-                "delete": "destroy"
-            }
-        ),
-        name="cinema-hall-detail"
-    ),
-    path(
-        "movies/",
-        movie_list,
-        name="movie-list"
-    ),
-    path(
-        "movies/<int:pk>/",
-        movie_detail,
-        name="movie-detail"
-    ),
+    path("", include(router.urls)),
+    path("genres/", GenreList.as_view(), name="genre-list"),
+    path("genres/<int:pk>/", GenreDetail.as_view(), name="genre-detail"),
+    path("actors/<int:pk>/", ActorDetail.as_view(), name="actor-detail"),
+    path("actors/", ActorList.as_view(), name="actor-list"),
+    path("cinema_halls/", cinema_list, name="cinema-list"),
+    path("cinema_halls/<int:pk>/", cinema_detail, name="cinema-detail"),
 ]
 
 app_name = "cinema"
